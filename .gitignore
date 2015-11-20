@@ -1,4 +1,3 @@
 config.json
-tags
-Session.vim
 gui/gen
+gui/node_modules
