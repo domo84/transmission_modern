@@ -7,11 +7,11 @@
   "version": "1.0.0",
   "description": "Transmission web GUI alternative",
   "main": "index.js",
+  "license": "WTFPL",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "magnus.hellman@gmail.com",
-  "license": "WTF",
   "devDependencies": {
     "backbone": "^1.2.3",
     "backbone.marionette": "^2.4.3",
@@ -40,6 +40,7 @@
   "dependencies": {
     "backbone.radio": "^1.0.2",
     "browserify": "^12.0.1",
-    "browserify-shim": "^3.8.11"
+    "browserify-shim": "^3.8.11",
+    "node-underscorify": "0.0.14"
   }
 }
