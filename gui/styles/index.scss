@@ -1,0 +1,12 @@
+@import "foundation";
+
+article {
+	&.torrent {
+		padding: 1em;
+		border-bottom: 1px solid grey;
+
+		&:hover {
+			background-color: #F5F6CE;
+		}
+	}
+}
