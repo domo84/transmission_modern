@@ -59,8 +59,6 @@ class Torrent(webapp2.RequestHandler):
             transmission = Transmission()
             transmission_result = transmission.post(data)
 
-            print transmission_result
-
     def get(self, torrent_id):
         data = {
             "method": "torrent-get",
@@ -93,7 +91,7 @@ class Torrents(webapp2.RequestHandler):
         result = transmission_result["result"]
 
         if result == "success":
-            args = loads["arguments"]
+            args = transmission_result["arguments"]
             try:
                 torrent_id = args["torrent-added"]["id"]
             except KeyError, e:
