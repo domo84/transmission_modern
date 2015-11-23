@@ -22,7 +22,7 @@ class Transmission():
             "Authorization": "Basic %s" % base64string
         }
 
-        req = urllib2.Request(url, data, headers)
+        req = urllib2.Request(url, json.dumps(data), headers)
         retry = False
         res = None
 
@@ -37,7 +37,8 @@ class Transmission():
             if retry:
                 return self.post(data)
             else:
-                return res.read()
+                result_body = res.read()
+                return json.loads(result_body)
 
 class Torrent(webapp2.RequestHandler):
     def delete(self, torrent_id):
@@ -55,14 +56,12 @@ class Torrent(webapp2.RequestHandler):
                 }
             }
 
-            json_data = json.dumps(data)
             transmission = Transmission()
-            result = transmission.post(json_data)
-            json_result = json.loads(result)
-            print result
+            transmission_result = transmission.post(data)
+
+            print transmission_result
 
     def get(self, torrent_id):
-        transmission = Transmission()
         data = {
             "method": "torrent-get",
             "arguments": {
@@ -71,10 +70,9 @@ class Torrent(webapp2.RequestHandler):
             }
         }
 
-        json_data = json.dumps(data)
-        result = transmission.post(json_data)
-        json_result = json.loads(result)
-        torrents = json.dumps(json_result["arguments"]["torrents"])
+        transmission = Transmission()
+        transmission_result = transmission.post(data)
+        torrents = json.dumps(transmission_result["arguments"]["torrents"])
 
         self.response.headers.add("Content-Type", "application/json")
         self.response.write(torrents)
@@ -90,11 +88,9 @@ class Torrents(webapp2.RequestHandler):
             }
         }
 
-        dump = json.dumps(data)
         transmission = Transmission()
-        out = transmission.post(dump)
-        loads = json.loads(out)
-        result = loads["result"]
+        transmission_result = transmission.post(data)
+        result = transmission_result["result"]
 
         if result == "success":
             args = loads["arguments"]
@@ -113,11 +109,11 @@ class Torrents(webapp2.RequestHandler):
             "method": "torrent-get",
             "arguments": { "fields": [ "id", "name", "error", "errorString" ] }
         }
-        json_data = json.dumps(data)
+
         transmission = Transmission()
-        result = transmission.post(json_data)
-        json_result = json.loads(result)
-        torrents = json.dumps(json_result["arguments"]["torrents"]);
+        transmission_result = transmission.post(data)
+        torrents = transmission_result["arguments"]["torrents"]
+
         self.response.headers.add("Content-Type", "application/json")
         self.response.write(torrents)
 
