@@ -70,8 +70,10 @@ class Torrent(webapp2.RequestHandler):
 
         transmission = Transmission()
         transmission_result = transmission.post(data)
-        torrents = json.dumps(transmission_result["arguments"]["torrents"])
 
+        torrents = json.dumps(transmission_result["arguments"]["torrents"][0])
+
+        self.response.headers.add("Access-Control-Allow-Origin", "*");
         self.response.headers.add("Content-Type", "application/json")
         self.response.write(torrents)
 
@@ -99,6 +101,7 @@ class Torrents(webapp2.RequestHandler):
             finally:
                 self.redirect("/torrent/%s" % torrent_id)
         else:
+            self.response.headers.add("Access-Control-Allow-Origin", "*");
             self.response.set_status(500)
             self.response.write(result)
         
@@ -112,8 +115,9 @@ class Torrents(webapp2.RequestHandler):
         transmission_result = transmission.post(data)
         torrents = transmission_result["arguments"]["torrents"]
 
+        self.response.headers.add("Access-Control-Allow-Origin", "*");
         self.response.headers.add("Content-Type", "application/json")
-        self.response.write(torrents)
+        self.response.write(json.dumps(torrents))
 
 app = webapp2.WSGIApplication([
     ("/torrent", Torrents),
