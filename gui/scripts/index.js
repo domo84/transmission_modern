@@ -10,7 +10,7 @@ var NavView = require("./views/items/nav");
 
 var AddModalView = Marionette.ItemView.extend(
 {
-	template: require("../html/views/item/modals/add.html"),
+	template: require("../html/items/modals/add.html"),
 	triggers: {
 		"submit": "submit"
 	},
@@ -19,6 +19,7 @@ var AddModalView = Marionette.ItemView.extend(
 		var magnet_uri = this.$el.find("input[name=magnet_uri]").val();
 		Radio.trigger("torrent", "add", magnet_uri);
 		this.$el.find(".close-button").click();
+		// Backbone.history.navigate("torrent/add/" + magnet_uri, { trigger: true });
 	}
 });
 

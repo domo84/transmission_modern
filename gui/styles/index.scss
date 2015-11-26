@@ -4,9 +4,22 @@ article {
 	&.torrent {
 		padding: 1em;
 		border-bottom: 1px solid grey;
+	}
 
-		&:hover {
-			background-color: #F5F6CE;
-		}
+	&.success {
+		background-color: #e1faea;
+	}
+
+	//&.success:hover {
+	//	background: #22bb5b;
+	//	color: #fff;
+	//}
+
+	&.alert {
+		background-color: #fce6e2;
+	}
+
+	&.running {
+		background-color: #cee3f6
 	}
 }

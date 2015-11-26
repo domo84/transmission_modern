@@ -8,19 +8,18 @@ function Controller()
 {
 	var context = this;
 
-	Radio.on("torrent", "add", context.add);
-
-	var torrents = new TorrentCollection();
-
-	Radio.reply("torrent", "collection", function()
+	Radio.on("torrent", "add", function(torrent)
 	{
-		return torrents;
+		context.add(torrent);
+		console.log("Radio", "Torrent", "Add");
 	});
+
+	context.torrents = new TorrentCollection();
 }
 
 Controller.prototype.list = function()
 {
-	var torrents = Radio.request("torrent", "collection");
+	var torrents = this.torrents
 	var torrentsView = new TorrentCollectionView({ collection: torrents });
 
 	torrents.fetch().done(function()
@@ -33,8 +32,7 @@ Controller.prototype.list = function()
 
 Controller.prototype.delete = function(id)
 {
-	var torrents = Radio.request("torrent", "collection");
-	var torrent = torrents.get(id);
+	var torrent = this.torrents.get(id);
 
 	torrent.destroy(
 	{
@@ -58,22 +56,16 @@ Controller.prototype.resume = function(id)
 	console.log("torrent", "resume", id);
 };
 
-Controller.prototype.add = function(magnet_uri)
+Controller.prototype.add = function(magnet_uri_1, magnet_uri_2)
 {
-	var torrents = Radio.request("torrent", "collection");
-	var torrent = new Torrent({ magnet_uri: magnet_uri });
+	var torrents = this.torrents;
+	var torrent = new Torrent({ magnet_uri: magnet_uri_1 + "?" + magnet_uri_2 });
 	torrent.save().done(function()
 	{
-		torrents.add(torrent);
-		console.log(torrents);
+		console.log(torrent);
 		console.log("added!");
-	});
-	/*
-	torrent.save().done(function()
-	{
 		torrents.add(torrent);
 	});
-	*/
 };
 
 new Marionette.AppRouter(
@@ -83,6 +75,7 @@ new Marionette.AppRouter(
 		"": "list",
 		"torrent/:id/remove": "remove",
 		"torrent/:id/resume": "resume",
-		"torrent/:id/delete": "delete"
+		"torrent/:id/delete": "delete",
+		"torrent/add/*magnet_uri": "add"
 	}
 });

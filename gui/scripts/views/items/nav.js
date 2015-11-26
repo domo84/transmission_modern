@@ -14,5 +14,5 @@ module.exports = Marionette.ItemView.extend(
 		modal.open();
 		modal.$element.find("input[tabindex=1]").focus();
 	},
-	template: require("../../../html/views/item/nav.html")
+	template: require("../../../html/items/nav.html")
 });

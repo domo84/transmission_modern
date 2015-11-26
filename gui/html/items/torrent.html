@@ -1,0 +1,17 @@
+<td><%= id %></td>
+<td><%= name %></td>
+<td><%= pretty_totalSize %></td>
+<td><%= pretty_downloadedEver %> (<%= pretty_rateDownload %>/s)</td>
+<td><%= pretty_uploadedEver %> (<%= pretty_rateUpload %>/s)</td>
+<td><%= pretty_uploadRatio %></td>
+<td>
+	<% if(error) { %><abbr title="<%= errorString %>">Error</abbr><% } else { %>
+	<%= statusText %>
+	<% } %>
+</td>
+<td class="text-right">
+	<a href="#torrent/<%= id %>/resume" title="Resume torrent"><i class="material-icons">play_circle_outline</i></a>
+	<a href="#torrent/<%= id %>/remove" title="Remove torrent (torrent only)"><i class="material-icons">remove_circle_outline</i></a>
+	<a href="#torrent/<%= id %>/delete" title="Remove torrent and delete files from disk"><i class="material-icons">delete</i></a>
+	<a href="#"><i class="material-icons">more_vert</i></a>
+</td>
