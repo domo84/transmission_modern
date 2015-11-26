@@ -6,6 +6,22 @@ import time
 
 xTransmissionSessionId = None
 
+torrent_fields = [
+    "id",
+    "name",
+    "error",
+    "errorString",
+    "status",
+    "totalSize",
+    "downloadedEver",
+    "rateDownload",
+    "isFinished",
+    "rateUpload",
+    "rateDownload",
+    "uploadedEver",
+    "uploadRatio"
+]
+
 with open("config.json") as data:
     load = json.load(data)
     url = load["url"]
@@ -60,10 +76,11 @@ class Torrent(webapp2.RequestHandler):
             transmission_result = transmission.post(data)
 
     def get(self, torrent_id):
+        global torrent_fields
         data = {
             "method": "torrent-get",
             "arguments": {
-                "fields": [ "id", "name", "error", "errorString" ],
+                "fields": torrent_fields,
                 "ids": [int(torrent_id)]
             }
         }
@@ -108,7 +125,9 @@ class Torrents(webapp2.RequestHandler):
     def get(self):
         data = {
             "method": "torrent-get",
-            "arguments": { "fields": [ "id", "name", "error", "errorString" ] }
+            "arguments": {
+                "fields": torrent_fields
+            }
         }
 
         transmission = Transmission()
