@@ -1,6 +1,15 @@
 module.exports = (grunt) ->
 	grunt.initConfig
+		concurrent:
+			server:
+				tasks: ["connect", "watch"]
+				options:
+					logConcurrentOutput: true
+
 		browserify:
+			options:
+				browserifyOptions:
+					debug: true
 			gen:
 				files:
 					"gen/out.js": ["scripts/index.js"]
@@ -38,3 +47,4 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-connect"
 	grunt.loadNpmTasks "grunt-contrib-watch"
 	grunt.loadNpmTasks "grunt-contrib-sass"
+	grunt.loadNpmTasks "grunt-concurrent"
