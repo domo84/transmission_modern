@@ -2,13 +2,30 @@ var Radio = require("backbone.radio");
 var Marionette = require("backbone.marionette");
 var TorrentCollection = require("../collections/torrent");
 var Torrent = require("../models/torrent");
-var TorrentCollectionView = require("../views/collections/torrent");
+var TorrentCompositeView = require("../views/composite/torrent");
+var AddView = require("../views/items/add");
 
 function Controller()
 {
 	var context = this;
+	var channel = Radio.channel("torrent");
 
-	Radio.on("torrent", "add", function(torrent)
+	channel.on("delete", function(id)
+	{
+		context.delete(id);
+	});
+
+	channel.on("resume", function(id)
+	{
+		context.reumse(id);
+	});
+
+	channel.on("remove", function(id)
+	{
+		context.remove(id);
+	});
+
+	channel.on("add", function(torrent)
 	{
 		context.add(torrent);
 		console.log("Radio", "Torrent", "Add");
@@ -20,7 +37,7 @@ function Controller()
 Controller.prototype.list = function()
 {
 	var torrents = this.torrents
-	var torrentsView = new TorrentCollectionView({ collection: torrents });
+	var torrentsView = new TorrentCompositeView({ collection: torrents });
 
 	torrents.fetch().done(function()
 	{
@@ -56,16 +73,21 @@ Controller.prototype.resume = function(id)
 	console.log("torrent", "resume", id);
 };
 
-Controller.prototype.add = function(magnet_uri_1, magnet_uri_2)
+Controller.prototype.add = function()
 {
-	var torrents = this.torrents;
-	var torrent = new Torrent({ magnet_uri: magnet_uri_1 + "?" + magnet_uri_2 });
-	torrent.save().done(function()
+	var context = this;
+
+	var view = new AddView();
+
+	Radio.trigger("layout", "set", view);
+
+	view.on("add", function(uri)
 	{
-		console.log(torrent);
-		console.log("added!");
-		torrents.add(torrent);
+		var torrent = new Torrent({ uri: uri });
+		torrent.save();
 	});
+
+	console.log("torrent", "add");
 };
 
 new Marionette.AppRouter(
@@ -76,6 +98,6 @@ new Marionette.AppRouter(
 		"torrent/:id/remove": "remove",
 		"torrent/:id/resume": "resume",
 		"torrent/:id/delete": "delete",
-		"torrent/add/*magnet_uri": "add"
+		"torrent/add": "add"
 	}
 });

@@ -20,18 +20,4 @@ module.exports = Backbone.Model.extend(
 
 		return result;
 	}
-
-	/* LEGACY 
-	url: function()
-	{
-		var base = settings.api_url + "/torrent";
-
-		if (this.isNew())
-		{
-			return base;
-		}
-
-		return base + "/" + this.id;
-	}
-	*/
 });

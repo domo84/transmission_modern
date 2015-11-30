@@ -3,25 +3,8 @@ var Radio = require("backbone.radio");
 var Marionette = require("backbone.marionette");
 var _ = require("lodash");
 var fs = require("fs");
-var foundation = require("foundation");
-var $ = require("jquery");
 
 var NavView = require("./views/items/nav");
-
-var AddModalView = Marionette.ItemView.extend(
-{
-	template: require("../html/items/modals/add.html"),
-	triggers: {
-		"submit": "submit"
-	},
-	onSubmit: function()
-	{
-		var magnet_uri = this.$el.find("input[name=magnet_uri]").val();
-		Radio.trigger("torrent", "add", magnet_uri);
-		this.$el.find(".close-button").click();
-		// Backbone.history.navigate("torrent/add/" + magnet_uri, { trigger: true });
-	}
-});
 
 var Layout = Marionette.LayoutView.extend(
 {
@@ -68,20 +51,11 @@ var App = Marionette.Application.extend(
 		var context = this;
 		var layout = context.layout;
 
-		var addModalView = new AddModalView();
 		var navView = new NavView();
 
 		layout.header.show(navView);
-		layout.modals.show(addModalView);
 
 		console.log("start");
-
-		/*
-		setTimeout(function()
-		{
-			$(document).foundation();
-		}, 1000);
-		*/
 	}
 });
 

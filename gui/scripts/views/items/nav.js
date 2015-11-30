@@ -1,18 +1,21 @@
+var Backbone = require("backbone");
 var Radio = require("backbone.radio");
 var Marionette = require("backbone.marionette");
 
 module.exports = Marionette.ItemView.extend(
 {
+	template: require("../../../html/items/nav.html"),
 	tagName: "nav",
 	triggers: {
-		"click [data-open=add-modal]": "openAddModal"
+		"click [data-nav=home]": "home",
+		"click [data-nav=torrent-add]": "addTorrent"
 	},
-	onOpenAddModal: function()
+	onHome: function()
 	{
-		var e = $("#add-modal");
-		var modal = new Foundation.Reveal(e);
-		modal.open();
-		modal.$element.find("input[tabindex=1]").focus();
+		Backbone.history.navigate("", { trigger: true });
 	},
-	template: require("../../../html/items/nav.html")
+	onAddTorrent: function()
+	{
+		Backbone.history.navigate("torrent/add", { trigger: true });
+	}
 });
