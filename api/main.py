@@ -56,24 +56,46 @@ class Transmission():
                 result_body = res.read()
                 return json.loads(result_body)
 
-class Torrent(webapp2.RequestHandler):
-    def delete(self, torrent_id):
-        try:
-            json_input = json.loads(self.request.body)
-            delete_local_data = json_input["delete_local_data"]
-        except ValueError, e:
-            delete_local_data = False
-        finally:
-            data = {
-                "method": "torrent-remove",
-                "arguments": {
-                    "ids": [int(torrent_id)],
-                    "delete-local-data": delete_local_data
-                }
-            }
+class ResponseDecorator():
+    def __init__(self, response):
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS, POST")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
 
-            transmission = Transmission()
-            transmission_result = transmission.post(data)
+        self.response = response
+
+    def write(self, body):
+        self.response.headers.add("Content-Type", "application/json")
+        json_body = json.dumps(body)
+        self.response.write(json_body)
+
+class Torrent(webapp2.RequestHandler):
+    def options(self, torrent_id):
+        ResponseDecorator(self.response)
+
+    def delete(self, torrent_id):
+
+        delete_local_data = False
+
+        if len(self.request.body) > 0:
+            try:
+                body = json.loads(self.request.body)
+                delete_local_data = body["delete_local_data"]
+            except ValueError, e:
+                print e
+
+        data = {
+            "method": "torrent-remove",
+            "arguments": {
+                "ids": [int(torrent_id)],
+                "delete-local-data": delete_local_data
+            }
+        }
+
+        transmission = Transmission()
+        transmission_result = transmission.post(data)
+
+        ResponseDecorator(self.response)
 
     def get(self, torrent_id):
         global torrent_fields
@@ -87,14 +109,18 @@ class Torrent(webapp2.RequestHandler):
 
         transmission = Transmission()
         transmission_result = transmission.post(data)
+        torrents = transmission_result["arguments"]["torrents"]
 
-        torrents = json.dumps(transmission_result["arguments"]["torrents"][0])
-
-        self.response.headers.add("Access-Control-Allow-Origin", "*");
-        self.response.headers.add("Content-Type", "application/json")
-        self.response.write(torrents)
+        if len(torrents) > 0:
+            ResponseDecorator(self.response).write(torrents[0])
+        else:
+            self.response.set_status(404)
+            ResponseDecorator(self.response)
 
 class Torrents(webapp2.RequestHandler):
+    def options(self):
+        ResponseDecorator(self.response)
+
     def post(self):
         body = self.request.body
         inputs = json.loads(body)
@@ -118,9 +144,8 @@ class Torrents(webapp2.RequestHandler):
             finally:
                 self.redirect("/torrent/%s" % torrent_id)
         else:
-            self.response.headers.add("Access-Control-Allow-Origin", "*");
             self.response.set_status(500)
-            self.response.write(result)
+            ResponseDecorator(self.response).write(result)
         
     def get(self):
         data = {
@@ -133,10 +158,7 @@ class Torrents(webapp2.RequestHandler):
         transmission = Transmission()
         transmission_result = transmission.post(data)
         torrents = transmission_result["arguments"]["torrents"]
-
-        self.response.headers.add("Access-Control-Allow-Origin", "*");
-        self.response.headers.add("Content-Type", "application/json")
-        self.response.write(json.dumps(torrents))
+        ResponseDecorator(self.response).write(torrents)
 
 app = webapp2.WSGIApplication([
     ("/torrent", Torrents),
