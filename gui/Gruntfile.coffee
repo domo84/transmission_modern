@@ -1,5 +1,8 @@
 module.exports = (grunt) ->
 	grunt.initConfig
+		pkg: grunt.file.readJSON("package.json")
+		dependencies: Object.keys(grunt.file.readJSON("package.json").dependencies)
+
 		concurrent:
 			server:
 				tasks: ["connect", "watch"]
@@ -7,15 +10,21 @@ module.exports = (grunt) ->
 					logConcurrentOutput: true
 
 		browserify:
-			options:
-				browserifyOptions:
-					debug: true
-			gen:
+			libs:
 				files:
-					"gen/out.js": ["scripts/index.js"]
+					"gen/libs.js": []
 				options:
-					transform: ['node-underscorify'],
+					debug: false,
+					require: "<%= dependencies %>"
+			app:
+				files:
+					"gen/app.js": ["scripts/index.js"]
+				options:
 					debug: true,
+					browserifyOptions:
+						debug: true
+					transform: ["node-underscorify"],
+					external: "<%= dependencies %>"
 
 		connect:
 			server:
@@ -39,12 +48,13 @@ module.exports = (grunt) ->
 					livereload: true
 			js:
 				files: ["scripts/**/*", "html/**/*"]
-				tasks: ["browserify"]
+				tasks: ["browserify:app"]
 				options:
 					livereload: true
 
 	grunt.loadNpmTasks "grunt-browserify"
+	grunt.loadNpmTasks "grunt-concurrent"
 	grunt.loadNpmTasks "grunt-contrib-connect"
 	grunt.loadNpmTasks "grunt-contrib-watch"
+
 	grunt.loadNpmTasks "grunt-contrib-sass"
-	grunt.loadNpmTasks "grunt-concurrent"
