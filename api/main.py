@@ -142,11 +142,13 @@ class Torrents(webapp2.RequestHandler):
             except KeyError, e:
                 torrent_id = args["torrent-duplicate"]["id"]
             finally:
-                self.redirect("/torrent/%s" % torrent_id)
+                ResponseDecorator(self.response)
+                self.response.set_status(201)
+                self.response.headers.add("Location", "/torrent/%s" % torrent_id)
         else:
             self.response.set_status(500)
             ResponseDecorator(self.response).write(result)
-        
+
     def get(self):
         data = {
             "method": "torrent-get",
