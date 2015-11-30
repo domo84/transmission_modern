@@ -127,7 +127,7 @@ class Torrents(webapp2.RequestHandler):
         data = {
             "method": "torrent-add",
             "arguments": {
-                "filename": inputs["magnet_uri"]
+                "filename": inputs["uri"]
             }
         }
 
