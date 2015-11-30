@@ -60,7 +60,7 @@ class ResponseDecorator():
     def __init__(self, response):
         response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS, POST")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Location")
 
         self.response = response
 
