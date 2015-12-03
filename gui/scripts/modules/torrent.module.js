@@ -1,93 +1,67 @@
+var $ = require("jquery");
+var Backbone = require("backbone");
 var Radio = require("backbone.radio");
 var Marionette = require("backbone.marionette");
-var TorrentCollection = require("../collections/torrent");
-var Torrent = require("../models/torrent");
-var TorrentCompositeView = require("../views/composite/torrent");
-var AddView = require("../views/items/add");
+var TorrentCollection = require("scripts/collections/torrent");
+var Torrent = require("scripts/models/torrent");
+var TorrentCompositeView = require("scripts/views/composite/torrent");
+var AddView = require("scripts/views/items/add");
+var Layout = require("scripts/views/layouts/torrent");
+var Poller = require("scripts/utils/poller");
 
 function Controller()
 {
-	var context = this;
-	var channel = Radio.channel("torrent");
-
-	channel.on("delete", function(id)
-	{
-		context.delete(id);
-	});
-
-	channel.on("resume", function(id)
-	{
-		context.reumse(id);
-	});
-
-	channel.on("remove", function(id)
-	{
-		context.remove(id);
-	});
-
-	channel.on("add", function(torrent)
-	{
-		context.add(torrent);
-		console.log("Radio", "Torrent", "Add");
-	});
-
-	context.torrents = new TorrentCollection();
 }
 
 Controller.prototype.list = function()
 {
-	var torrents = this.torrents
-	var torrentsView = new TorrentCompositeView({ collection: torrents });
+	var context = this;
+	var torrents = new TorrentCollection();
+	var poller = new Poller(torrents);
+	var view = new TorrentCompositeView({ collection: torrents });
+	var layout = new Layout();
 
-	torrents.fetch().done(function()
-	{
-		Radio.trigger("layout", "set", torrentsView);
-	});
+	layout.main.show(view);
+
+	$(window).blur(() => poller.stop());
+	$(window).focus(() => poller.start());
+
+	poller.on("tick", () => view.render());
+
+	torrents.fetch();
+	torrents.fetch().done(() => poller.start());
+
+	view.on("destroy", () => poller.stop());
+	view.on("childview:delete", (view) => view.model.purge());
+	view.on("childview:remove", (view) => view.model.destroy());
+	view.on("childview:stop", (view) => view.model.stop());
+	view.on("childview:start", (view) => view.model.start());
 
 	console.log("list", "all");
 };
 
-Controller.prototype.delete = function(id)
+Controller.prototype.show = function(id)
 {
-	var torrent = this.torrents.get(id);
-
-	torrent.destroy(
-	{
-		contentType: "application/json",
-		data: JSON.stringify({ delete_local_data: true })
-	});
-
-	console.log("torrent", "delete", id);
-}
-
-Controller.prototype.remove = function(id)
-{
-	var torrent = this.torrents.get(id);
-	torrent.destroy();
-
-	console.log("torrent", "remove", id);
-};
-
-Controller.prototype.resume = function(id)
-{
-	console.log("torrent", "resume", id);
+	console.log("torrent", "show", id);
 };
 
 Controller.prototype.add = function()
 {
+	console.log("torrent", "add");
+
 	var context = this;
-
 	var view = new AddView();
-
-	Radio.trigger("layout", "set", view);
+	var layout = new Layout();
+	layout.main.show(view);
 
 	view.on("add", function(uri)
 	{
 		var torrent = new Torrent({ uri: uri });
-		torrent.save();
+		torrent.save().success(function()
+		{
+			Backbone.history.navigate("", { trigger: true });
+		});
 	});
-
-	console.log("torrent", "add");
 };
 
 new Marionette.AppRouter(
@@ -95,9 +69,7 @@ new Marionette.AppRouter(
 	controller: new Controller(),
 	appRoutes: {
 		"": "list",
-		"torrent/:id/remove": "remove",
-		"torrent/:id/resume": "resume",
-		"torrent/:id/delete": "delete",
-		"torrent/add": "add"
+		"torrent/add": "add",
+		"torrent/:id": "show"
 	}
 });

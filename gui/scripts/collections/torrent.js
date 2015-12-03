@@ -6,5 +6,9 @@ module.exports = Backbone.Collection.extend(
 {
 	model: Torrent,
 	url: settings.api_url + "/torrent",
-	comparator: "name"
+	comparator: "name",
+	redraw: function()
+	{
+		this.reset(this.models);
+	}
 });

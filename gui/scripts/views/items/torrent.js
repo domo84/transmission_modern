@@ -10,24 +10,10 @@ module.exports = Marionette.ItemView.extend(
 		"class": "torrent"
 	},
 	triggers: {
-		"click [data-action=resume]": "resume",
+		"click [data-action=start]": "start",
+		"click [data-action=stop]": "stop",
 		"click [data-action=remove]": "remove",
 		"click [data-action=delete]": "delete"
-	},
-	onResume: function()
-	{
-		Radio.trigger("torrent", "resume", this.model.id);
-		console.log("Resume");
-	},
-	onRemove: function()
-	{
-		Radio.trigger("torrent", "remove", this.model.id);
-		console.log("Remove");
-	},
-	onDelete: function()
-	{
-		Radio.trigger("torrent", "delete", this.model.id);
-		console.log("Delete");
 	},
 	onRender: function()
 	{

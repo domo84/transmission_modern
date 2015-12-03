@@ -5,12 +5,16 @@
 <% } %>
 </td>
 <td><%= pretty_totalSize %></td>
-<td><%= pretty_downloadedEver %> (<%= pretty_rateDownload %>/s)</td>
-<td><%= pretty_uploadedEver %> (<%= pretty_rateUpload %>/s)</td>
+<td><%= pretty_downloadedEver %><% if(status == 4) { %> (<%= pretty_rateDownload %>/s)<% } %></td>
+<td><%= pretty_uploadedEver %><% if(status == 4 || status == 6) { %> (<%= pretty_rateUpload %>/s)<% } %></td>
 <td><%= pretty_uploadRatio %></td>
 <td><%= statusText %></td>
 <td class="text-right">
-	<a data-action="resume" title="Resume torrent"><i class="material-icons">play_circle_outline</i></a>
+<% if(status == 0) { %>
+<a data-action="start" title="Start torrent"><i class="material-icons">play_circle_outline</i></a>
+<% } else { %>
+<a data-action="stop" title="Stop torrent"><i class="material-icons">stop</i></a>
+<% } %>
 	<a data-action="remove" title="Remove torrent (torrent only)"><i class="material-icons">remove_circle_outline</i></a>
 	<a data-action="delete" title="Remove torrent and delete files from disk"><i class="material-icons">delete</i></a>
 	<a href="#"><i class="material-icons">more_vert</i></a>

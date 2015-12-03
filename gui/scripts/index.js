@@ -35,18 +35,41 @@ var App = Marionette.Application.extend(
 
 		context.layout = new Layout();
 
-		Radio.on("layout", "set", function(view)
-		{
-			context.layout.main.show(view);
-		});
+		Radio.DEBUG = true;
 
 		console.log("initializing");
 	},
 	onStart: function(options)
 	{
-		console.log("starting", options);
+		// Keyboard bindings
+		var $ = require("jquery");
+		$("body").keyup(function(event)
+		{
+			// Ignore if the cursor is in an input field
+			if(event.target.localName !== "input")
+			{
+				switch(event.which)
+				{
+					case 65: // a
+					{
+						Backbone.history.navigate("", { trigger: true });
+						break;
+					}
+					case 78: // n
+					{
+						Backbone.history.navigate("torrent/add", { trigger: true });
+						break;
+					}
+					case 83: // s
+					{
+						$("header").find("input[type=search]").focus();
+						break;
+					}
+				}
+			}
+		});
 
-		Backbone.history.start();
+		console.log("onStart", "begin");
 
 		var context = this;
 		var layout = context.layout;
@@ -55,7 +78,9 @@ var App = Marionette.Application.extend(
 
 		layout.header.show(navView);
 
-		console.log("start");
+		Backbone.history.start();
+
+		console.log("onStart", "end");
 	}
 });
 
