@@ -59,7 +59,7 @@ class Transmission():
 class ResponseDecorator():
     def __init__(self, response):
         response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS, POST")
+        response.headers.add("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS, PATCH, POST, PUT")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type, Location")
 
         self.response = response
@@ -71,6 +71,51 @@ class ResponseDecorator():
 
 class Torrent(webapp2.RequestHandler):
     def options(self, torrent_id):
+        ResponseDecorator(self.response)
+
+    def patch(self, torrent_id):
+        try:
+            body = json.loads(self.request.body)
+            method = body["method"]
+        except ValueError, e:
+            print e
+
+        data = {
+            "method": method,
+            "arguments": {
+                "ids": [int(torrent_id)]
+            }
+        }
+
+        transmission = Transmission()
+        transmission_result = transmission.post(data)
+
+        if method == "torrent-stop":
+            status = 0
+        else:
+            status = 6 if body["x_isFinished"] else 4
+
+        self.response.set_status(200)
+        ResponseDecorator(self.response).write({ "status": status })
+
+    def put(self, torrent_id):
+        try:
+            body = json.loads(self.request.body)
+            method = body["method"]
+        except ValueError, e:
+            print e
+
+        data = {
+            "method": method,
+            "arguments": {
+                "ids": [int(torrent_id)]
+            }
+        }
+
+        transmission = Transmission()
+        transmission_result = transmission.post(data)
+        # self.response.headers.add("Location", "/torrent/%s" % torrent_id)
+        self.response.set_status(202)
         ResponseDecorator(self.response)
 
     def delete(self, torrent_id):
@@ -94,7 +139,6 @@ class Torrent(webapp2.RequestHandler):
 
         transmission = Transmission()
         transmission_result = transmission.post(data)
-
         ResponseDecorator(self.response)
 
     def get(self, torrent_id):
@@ -161,6 +205,10 @@ class Torrents(webapp2.RequestHandler):
         transmission_result = transmission.post(data)
         torrents = transmission_result["arguments"]["torrents"]
         ResponseDecorator(self.response).write(torrents)
+
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 
 app = webapp2.WSGIApplication([
     ("/torrent", Torrents),
