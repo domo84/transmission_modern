@@ -1,0 +1,7 @@
+<h3><%= name %></h3>
+<dl>
+<% attributes.forEach(function(item) { %>
+	<dt><%= item.key %></dt>
+	<dd><%= item.value %></dd>
+<% }); %>
+</dl>
