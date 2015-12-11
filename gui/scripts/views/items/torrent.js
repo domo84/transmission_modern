@@ -15,28 +15,41 @@ module.exports = Marionette.ItemView.extend(
 		"click [data-action=remove]": "remove",
 		"click [data-action=delete]": "delete"
 	},
+	onStart: function(view)
+	{
+		this.model.start();
+	},
+	onStop: function()
+	{
+		this.model.stop();
+	},
+	onRemove: function()
+	{
+		this.model.destroy();
+	},
+	onDelete: function()
+	{
+		this.model.purge();
+	},
 	onRender: function()
 	{
+		/*
 		var context = this;
 		var model = this.model;
-		switch(model.get("status"))
+
+		if(model.get("error") !== 0)
 		{
-			case 1:
-			{
-				context.$el.addClass("alert");
-				break;
-			}
-			case 2:
-			{
-				context.$el.addClass("success");
-				break;
-			}
-			case 3:
-			{
-				context.$el.addClass("running");
-				break;
-			}
+			context.$el.addClass("error");
 		}
+		else if(model.get("status") === 6 || model.get("status") === 4)
+		{
+			context.$el.addClass("active");
+		}
+		else
+		{
+			context.$el.addClass("slumbering");
+		}
+		*/
 	},
 	template: html,
 	templateHelpers: function()

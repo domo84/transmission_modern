@@ -1,14 +1,19 @@
-<td><%= id %></td>
-<td><%= name %>
+<td>
+	<% if(downloadedEver > totalSize) { %>
+	<i style="color: green;" class="material-icons" title="The torrent has been downloaded">done</i>
+	<% } %>
+</td>
+<!-- <td><%= id %></td> -->
+<td><a href="#torrent/<%= id %>"><%= name %></a>
 <% if(error) { %>
-<div><em><small><%= errorString %></small></em></div>
+<div><em><small style="color: red;"><%= errorString %></small></em></div>
 <% } %>
 </td>
 <td><%= pretty_totalSize %></td>
 <td><%= pretty_downloadedEver %><% if(status == 4) { %> (<%= pretty_rateDownload %>/s)<% } %></td>
 <td><%= pretty_uploadedEver %><% if(status == 4 || status == 6) { %> (<%= pretty_rateUpload %>/s)<% } %></td>
 <td><%= pretty_uploadRatio %></td>
-<td><%= statusText %></td>
+<td class="status"><%= statusText %></td>
 <td class="text-right">
 <% if(status == 0) { %>
 <a data-action="start" title="Start torrent"><i class="material-icons">play_circle_outline</i></a>

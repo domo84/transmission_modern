@@ -1,25 +1,14 @@
 @import "foundation";
 
-article {
-	&.torrent {
-		padding: 1em;
-		border-bottom: 1px solid grey;
+tr {
+	&.error td.status {
+		color: red;
 	}
 
-	&.success {
-		background-color: #e1faea;
+	&.active td.status {
+		color: green;
 	}
 
-	//&.success:hover {
-	//	background: #22bb5b;
-	//	color: #fff;
-	//}
-
-	&.alert {
-		background-color: #fce6e2;
-	}
-
-	&.running {
-		background-color: #cee3f6
+	&.slumbering td.status {
 	}
 }

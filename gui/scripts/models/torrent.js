@@ -16,7 +16,14 @@ module.exports = Backbone.Model.extend(
 	urlRoot: settings.api_url + "/torrent",
 	parse: function(result, options)
 	{
-		result.statusText = statuses[result.status];
+		if(false === true && result.error)
+		{
+			result.statusText = "Error";
+		}
+		else
+		{
+			result.statusText = statuses[result.status];
+		}
 
 		return result;
 	},

@@ -7,7 +7,7 @@ function Poller(unit)
 
 	var context = this;
 	context.unit = unit;
-	context.interval = 4000;
+	context.interval = 10000;
 	context.timer = false;
 }
 
@@ -15,6 +15,7 @@ Poller.prototype.start = function()
 {
 	var context = this;
 	context.trigger("start");
+	context.unit.fetch();
 	context._tick();
 };
 

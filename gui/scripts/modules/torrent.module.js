@@ -5,6 +5,7 @@ var Marionette = require("backbone.marionette");
 var TorrentCollection = require("scripts/collections/torrent");
 var Torrent = require("scripts/models/torrent");
 var TorrentCompositeView = require("scripts/views/composite/torrent");
+var TorrentShowView = require("scripts/views/items/torrent_detail");
 var AddView = require("scripts/views/items/add");
 var Layout = require("scripts/views/layouts/torrent");
 var Poller = require("scripts/utils/poller");
@@ -15,6 +16,8 @@ function Controller()
 
 Controller.prototype.list = function()
 {
+	console.log("list", "all");
+
 	var context = this;
 	var torrents = new TorrentCollection();
 	var poller = new Poller(torrents);
@@ -23,26 +26,29 @@ Controller.prototype.list = function()
 
 	layout.main.show(view);
 
+	view.on("destroy", () => poller.stop());
+
 	$(window).blur(() => poller.stop());
 	$(window).focus(() => poller.start());
 
 	poller.on("tick", () => view.render());
-
-	torrents.fetch();
-	torrents.fetch().done(() => poller.start());
-
-	view.on("destroy", () => poller.stop());
-	view.on("childview:delete", (view) => view.model.purge());
-	view.on("childview:remove", (view) => view.model.destroy());
-	view.on("childview:stop", (view) => view.model.stop());
-	view.on("childview:start", (view) => view.model.start());
-
-	console.log("list", "all");
+	poller.start();
 };
 
 Controller.prototype.show = function(id)
 {
 	console.log("torrent", "show", id);
+
+	var context = this;
+	var torrent = new Torrent({ id : id });
+
+	torrent.fetch().done(function()
+	{
+		var layout = new Layout();
+		var view = new TorrentShowView({ model: torrent });
+
+		layout.main.show(view);
+	});
 };
 
 Controller.prototype.add = function()
