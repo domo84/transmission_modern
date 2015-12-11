@@ -7,6 +7,7 @@ import time
 xTransmissionSessionId = None
 
 torrent_fields = [
+    "addedDate",
     "id",
     "name",
     "error",
